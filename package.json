@@ -17,7 +17,15 @@
     "computer-vision",
     "smart-home"
   ],
-  "author": "GuardAgent Team",
+  "author": "Poovarasan (https://github.com/Poovarasan-2005)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Poovarasan-2005/guardagent-ai.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Poovarasan-2005/guardagent-ai/issues"
+  },
+  "homepage": "https://github.com/Poovarasan-2005/guardagent-ai#readme",
   "license": "MIT",
   "dependencies": {
     "dotenv": "^16.4.7",
