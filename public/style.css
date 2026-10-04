@@ -755,6 +755,121 @@ body {
 }
 
 /* ==========================================================================
+   TOP SCENARIOS BAR (High Visibility Quick Launch)
+   ========================================================================== */
+.top-scenarios-bar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 28px;
+  background: linear-gradient(90deg, rgba(15, 23, 42, 0.98), rgba(30, 41, 59, 0.95));
+  border-bottom: 1px solid rgba(56, 189, 248, 0.25);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.35);
+  z-index: 80;
+  position: relative;
+  overflow-x: auto;
+}
+
+.scenarios-bar-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.scenarios-bar-header .pulse-icon {
+  font-size: 14px;
+  color: #38bdf8;
+}
+
+.scenarios-bar-title {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #38bdf8;
+  text-transform: uppercase;
+}
+
+.top-scenarios-scroll {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: nowrap;
+}
+
+.top-scenario-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--text-main);
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.top-scenario-pill:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.top-scenario-pill.courier:hover {
+  border-color: #38bdf8;
+  background: rgba(56, 189, 248, 0.18);
+  color: #38bdf8;
+}
+
+.top-scenario-pill.intruder {
+  border-color: rgba(239, 68, 68, 0.4);
+  background: rgba(239, 68, 68, 0.08);
+}
+.top-scenario-pill.intruder:hover {
+  border-color: #ef4444;
+  background: rgba(239, 68, 68, 0.25);
+  color: #fca5a5;
+  box-shadow: 0 0 14px rgba(239, 68, 68, 0.4);
+}
+
+.top-scenario-pill.theft:hover {
+  border-color: #f59e0b;
+  background: rgba(245, 158, 11, 0.2);
+  color: #fbbf24;
+}
+
+.top-scenario-pill.resident:hover {
+  border-color: #10b981;
+  background: rgba(16, 185, 129, 0.2);
+  color: #6ee7b7;
+}
+
+.top-scenario-pill.fall:hover {
+  border-color: #ec4899;
+  background: rgba(236, 72, 153, 0.2);
+  color: #f472b6;
+}
+
+.top-scenario-pill.animal:hover {
+  border-color: #a855f7;
+  background: rgba(168, 85, 247, 0.2);
+  color: #d8b4fe;
+}
+
+.top-scenario-pill.stranger:hover {
+  border-color: #94a3b8;
+  background: rgba(148, 163, 184, 0.2);
+  color: #cbd5e1;
+}
+
+.top-scenario-pill:active {
+  transform: translateY(1px);
+}
+
+/* ==========================================================================
    Dashboard Grid Layout
    ========================================================================== */
 .dashboard-grid {
