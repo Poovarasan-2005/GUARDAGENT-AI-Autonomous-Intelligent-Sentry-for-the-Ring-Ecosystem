@@ -97,9 +97,9 @@ ring-api, amazon-devices, iot, javascript, node.js, typescript, computer-vision,
 ## 3. "Try It Out" Links
 *Copy and paste into the "Try it out" link fields:*
 
-1. **GitHub Repository**: `https://github.com/Poovarasan-2005/guardagent-ai`
+1. **GitHub Repository**: `https://github.com/Poovarasan-2005/GUARDAGENT-AI-Autonomous-Intelligent-Sentry-for-the-Ring-Ecosystem`
 2. **Interactive Live Demo / Simulator**: `http://localhost:3000` *(or your deployed URL on Render/Vercel/AWS)*
-3. **Ring API Documentation & Architecture**: `https://github.com/Poovarasan-2005/guardagent-ai#architecture`
+3. **Ring API Documentation & Architecture**: `https://github.com/Poovarasan-2005/GUARDAGENT-AI-Autonomous-Intelligent-Sentry-for-the-Ring-Ecosystem#architecture`
 
 ---
 

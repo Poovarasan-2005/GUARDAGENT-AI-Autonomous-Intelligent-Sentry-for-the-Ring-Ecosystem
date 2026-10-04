@@ -20,12 +20,12 @@
   "author": "Poovarasan (https://github.com/Poovarasan-2005)",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Poovarasan-2005/guardagent-ai.git"
+    "url": "https://github.com/Poovarasan-2005/GUARDAGENT-AI-Autonomous-Intelligent-Sentry-for-the-Ring-Ecosystem.git"
   },
   "bugs": {
-    "url": "https://github.com/Poovarasan-2005/guardagent-ai/issues"
+    "url": "https://github.com/Poovarasan-2005/GUARDAGENT-AI-Autonomous-Intelligent-Sentry-for-the-Ring-Ecosystem/issues"
   },
-  "homepage": "https://github.com/Poovarasan-2005/guardagent-ai#readme",
+  "homepage": "https://github.com/Poovarasan-2005/GUARDAGENT-AI-Autonomous-Intelligent-Sentry-for-the-Ring-Ecosystem#readme",
   "license": "MIT",
   "dependencies": {
     "dotenv": "^16.4.7",

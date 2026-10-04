@@ -147,8 +147,8 @@ $$\mathcal{T}(t) = \frac{1}{1 + e^{-1.996}} = 0.8804 \implies \mathbf{88.0\%} \q
 ### 2. Installation & Setup
 ```bash
 # 1. Clone the repository
-git clone https://github.com/Poovarasan-2005/guardagent-ai.git
-cd guardagent-ai
+git clone https://github.com/Poovarasan-2005/GUARDAGENT-AI-Autonomous-Intelligent-Sentry-for-the-Ring-Ecosystem.git
+cd GUARDAGENT-AI-Autonomous-Intelligent-Sentry-for-the-Ring-Ecosystem
 
 # 2. Install dependencies
 npm install
