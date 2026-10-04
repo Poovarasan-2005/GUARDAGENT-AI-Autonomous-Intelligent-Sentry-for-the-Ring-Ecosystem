@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GuardAgent AI — Sentry Control Center (Ring Track)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Header Bar -->
+  <header class="app-header">
+    <div class="header-brand">
+      <div class="logo-shield">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+      </div>
+      <div>
+        <div class="brand-title-wrap">
+          <h1 class="brand-title">GuardAgent AI</h1>
+          <span class="badge ring-track">Ring Track</span>
+          <span class="badge hackathon">Amazon Developer Hackathon</span>
+        </div>
+        <p class="brand-subtitle">Autonomous Security & IoT Access Control for the Ring Ecosystem</p>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <div class="mode-selector">
+        <span class="mode-label">Agent Mode:</span>
+        <select id="agentModeSelect" class="cyber-select">
+          <option value="ARMED_SENTRY" selected>🛡️ Armed Sentry (Autonomous)</option>
+          <option value="CARETAKER_ONLY">🩺 Caretaker & Safety Only</option>
+          <option value="DISARMED">💤 Disarmed / Standby</option>
+        </select>
+      </div>
+      <div class="status-pill online" id="wsStatusPill">
+        <span class="dot"></span>
+        <span id="wsStatusText">RING SIMULATOR ONLINE</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container Grid -->
+  <main class="dashboard-grid">
+
+    <!-- LEFT COLUMN: Live Camera Stage & Scenarios -->
+    <section class="stage-column">
+
+      <!-- Live Ring Camera Viewport Card -->
+      <div class="glass-card camera-card">
+        <div class="card-header">
+          <div class="camera-info">
+            <span class="rec-dot"></span>
+            <span class="camera-name" id="currentCameraName">Front Door Pro 2</span>
+            <span class="camera-spec">1080p HDR • 60 FPS • Encrypted</span>
+          </div>
+          <div class="camera-toolbar">
+            <button class="tool-btn active" id="btnCamDoorbell" title="Switch to Front Doorbell">Doorbell</button>
+            <button class="tool-btn" id="btnCamFloodlight" title="Switch to Driveway Floodlight">Floodlight</button>
+            <button class="tool-btn" id="btnNightVision" title="Toggle Night Vision">IR Night</button>
+          </div>
+        </div>
+
+        <div class="canvas-wrapper">
+          <canvas id="cameraCanvas" width="720" height="420"></canvas>
+          
+          <!-- Threat Level Overlay Badge -->
+          <div class="canvas-overlay-threat" id="threatOverlayBadge">
+            <span class="threat-label">THREAT INDEX</span>
+            <span class="threat-value" id="overlayThreatVal">0%</span>
+            <span class="threat-level-tag" id="overlayThreatLevel">BENIGN</span>
+          </div>
+
+          <!-- Video Stream Watermark -->
+          <div class="canvas-watermark">
+            <span>RING OS v12.4 • LIVE SENTRY STREAM</span>
+            <span id="streamTimestamp">--:--:--</span>
+          </div>
+
+          <!-- Active Siren Visualizer Overlay -->
+          <div class="siren-strobe-overlay" id="sirenStrobeOverlay"></div>
+        </div>
+
+        <!-- Two-Way Audio Sentry Intercom Bar -->
+        <div class="intercom-bar">
+          <div class="intercom-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+              <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+              <line x1="12" y1="19" x2="12" y2="23"/>
+              <line x1="8" y1="23" x2="16" y2="23"/>
+            </svg>
+          </div>
+          <div class="intercom-speech-content">
+            <span class="intercom-tag" id="intercomSpeaker">Ring Two-Way Intercom (Idle)</span>
+            <p class="intercom-text" id="intercomSpeechText">Sentry listening for porch visitor engagement...</p>
+          </div>
+          <div class="waveform-anim" id="waveformAnim">
+            <span></span><span></span><span></span><span></span><span></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Interactive Scenarios Bar -->
+      <div class="glass-card scenarios-card">
+        <h3 class="card-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          Trigger Security Scenarios (Judge Verification Suite)
+        </h3>
+        <p class="card-desc">Simulate realistic Ring doorbell rings, delivery drops, or late-night intruder encounters to test GuardAgent's autonomous logic.</p>
+        
+        <div class="scenario-buttons-grid">
+          <button class="scenario-btn courier" data-scenario="courier">
+            <div class="btn-icon">📦</div>
+            <div class="btn-text">
+              <strong>Amazon Prime Courier</strong>
+              <span>Detects parcel, verifies drop-off, unlocks lockbox</span>
+            </div>
+          </button>
+
+          <button class="scenario-btn intruder" data-scenario="intruder">
+            <div class="btn-icon">🚨</div>
+            <div class="btn-text">
+              <strong>Late-Night Intruder</strong>
+              <span>Masked prowler, floodlight strobe, graduated 110dB siren</span>
+            </div>
+          </button>
+
+          <button class="scenario-btn resident" data-scenario="resident">
+            <div class="btn-icon">🔑</div>
+            <div class="btn-text">
+              <strong>Resident Return</strong>
+              <span>Recognizes Sarah, welcomes by name, auto-unlocks deadbolt</span>
+            </div>
+          </button>
+
+          <button class="scenario-btn animal" data-scenario="animal">
+            <div class="btn-icon">🐱</div>
+            <div class="btn-text">
+              <strong>Harmless Pet Filter</strong>
+              <span>Classifies stray animal, suppresses alarms & false alerts</span>
+            </div>
+          </button>
+
+          <button class="scenario-btn fall" data-scenario="fall_emergency">
+            <div class="btn-icon">🩺</div>
+            <div class="btn-text">
+              <strong>Caretaker Fall Alert</strong>
+              <span>Elderly fall detection, voice check, caretaker dispatch</span>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      <!-- Live Ring API Inspector Panel -->
+      <div class="glass-card api-inspector-card">
+        <div class="card-header">
+          <h3 class="card-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+            Live Ring API & Webhook Packet Inspector
+          </h3>
+          <span class="badge api-badge" id="apiCallCount">0 Calls</span>
+        </div>
+        <div class="api-log-stream" id="apiLogStream">
+          <div class="log-placeholder">Awaiting Ring API events and webhook dispatches...</div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- RIGHT COLUMN: Threat Engine, Ring Device Controls & Decision Log -->
+    <section class="control-column">
+
+      <!-- Threat Engine Math Matrix Card -->
+      <div class="glass-card threat-matrix-card">
+        <h3 class="card-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+          Multi-Factor Threat Matrix
+        </h3>
+        <div class="threat-math-header">
+          <div class="threat-gauge-large">
+            <span class="gauge-number" id="threatNumber">0%</span>
+            <span class="gauge-sub" id="threatStatusBadge">NORMAL</span>
+          </div>
+          <div class="threat-equation">
+            <code>T(t) = σ(w_v·V + w_t·T_d + w_z·Z + w_b·B - θ)</code>
+            <small>Logistic Sigmoidal Multi-Vector Assessment</small>
+          </div>
+        </div>
+
+        <div class="vector-bars">
+          <div class="vector-bar-row">
+            <div class="bar-labels">
+              <span>Visual Anomaly (V)</span>
+              <span id="valVisualAnomaly">0%</span>
+            </div>
+            <div class="bar-track"><div class="bar-fill" id="barVisual" style="width: 0%"></div></div>
+          </div>
+
+          <div class="vector-bar-row">
+            <div class="bar-labels">
+              <span>Dwell Time Saturation (T_d)</span>
+              <span id="valDwellTime">0s</span>
+            </div>
+            <div class="bar-track"><div class="bar-fill" id="barDwell" style="width: 0%"></div></div>
+          </div>
+
+          <div class="vector-bar-row">
+            <div class="bar-labels">
+              <span>Perimeter Zone Breach (Z)</span>
+              <span id="valZoneBreach">Clear</span>
+            </div>
+            <div class="bar-track"><div class="bar-fill" id="barZone" style="width: 0%"></div></div>
+          </div>
+
+          <div class="vector-bar-row">
+            <div class="bar-labels">
+              <span>Behavioral Anomaly (B)</span>
+              <span id="valBehavior">0%</span>
+            </div>
+            <div class="bar-track"><div class="bar-fill" id="barBehavior" style="width: 0%"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ring Connected Devices Control Center -->
+      <div class="glass-card devices-card">
+        <h3 class="card-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          Ring Device Mesh Actuators
+        </h3>
+
+        <div class="device-list">
+          <!-- Smart Deadbolt -->
+          <div class="device-item" id="deviceLockItem">
+            <div class="device-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </div>
+            <div class="device-details">
+              <span class="device-name">Ring Smart Deadbolt</span>
+              <span class="device-state" id="lockStateText">LOCKED (Secure)</span>
+            </div>
+            <button class="device-action-btn" id="btnToggleLock">Unlock</button>
+          </div>
+
+          <!-- Floodlight Cam -->
+          <div class="device-item" id="deviceFloodlightItem">
+            <div class="device-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+            </div>
+            <div class="device-details">
+              <span class="device-name">Driveway Floodlight Cam</span>
+              <span class="device-state" id="floodlightStateText">OFF (0% Intensity)</span>
+            </div>
+            <button class="device-action-btn" id="btnToggleFloodlight">Lights On</button>
+          </div>
+
+          <!-- Alarm Siren -->
+          <div class="device-item" id="deviceSirenItem">
+            <div class="device-icon siren-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            </div>
+            <div class="device-details">
+              <span class="device-name">Ring 110dB Alarm Siren</span>
+              <span class="device-state" id="sirenStateText">STANDBY</span>
+            </div>
+            <button class="device-action-btn danger" id="btnToggleSiren">Test Siren</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Autonomous Agent Decision Timeline -->
+      <div class="glass-card decisions-card">
+        <h3 class="card-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          GuardAgent Autonomous Decision Stream
+        </h3>
+        <div class="decision-feed" id="decisionFeed">
+          <div class="feed-item initialized">
+            <div class="feed-time">NOW</div>
+            <div class="feed-content">
+              <strong>GuardAgent Sentry Initialized</strong>
+              <p>Connected to Ring Device Simulator. Armed in Autonomous Sentry Mode.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <footer class="app-footer">
+    <span>GuardAgent AI v1.0 • Built for <strong>Amazon Developer Hackathon 2026 (Ring Track)</strong></span>
+    <span>Powered by Ring APIs, Node.js, WebSockets & Agentic Threat Matrix</span>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
