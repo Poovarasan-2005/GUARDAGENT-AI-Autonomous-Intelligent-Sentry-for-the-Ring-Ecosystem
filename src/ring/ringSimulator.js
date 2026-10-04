@@ -8,7 +8,7 @@ import { DeviceTypes, EventTypes, VisitorTypes } from './ringTypes.js';
 
 export class RingSimulator {
   constructor() {
-    this.devices = {
+    this.initialState = {
       'doorbell_front': {
         id: 'doorbell_front',
         name: 'Front Door Pro 2',
@@ -22,7 +22,7 @@ export class RingSimulator {
       },
       'floodlight_driveway': {
         id: 'floodlight_driveway',
-        name: 'Driveway Floodlight Cam',
+        name: 'Driveway Floodlight Cam Wired Pro',
         kind: DeviceTypes.FLOODLIGHT_CAM,
         firmware: '9.8.12',
         online: true,
@@ -44,15 +44,27 @@ export class RingSimulator {
       },
       'chime_hallway': {
         id: 'chime_hallway',
-        name: 'Interior Chime Pro',
+        name: 'Interior Chime Pro v2',
         kind: DeviceTypes.CHIME,
         firmware: '5.2.1',
         online: true,
         volume: 85,
         currentlyPlaying: null
+      },
+      'contact_sensor_front_gate': {
+        id: 'contact_sensor_front_gate',
+        name: 'Perimeter Gate Contact Sensor',
+        kind: DeviceTypes.CONTACT_SENSOR,
+        firmware: '2.0.4',
+        battery: 98,
+        online: true,
+        tamper: 'ok',
+        state: 'closed',
+        lastEvent: null
       }
     };
 
+    this.devices = JSON.parse(JSON.stringify(this.initialState));
     this.listeners = [];
     this.activeScenario = null;
   }
@@ -91,7 +103,7 @@ export class RingSimulator {
       dev.twoWayTalkActive = true;
       setTimeout(() => {
         if (this.devices[deviceId]) this.devices[deviceId].twoWayTalkActive = false;
-      }, 4000);
+      }, 4500);
     }
     const event = {
       type: EventTypes.TWO_WAY_AUDIO_START,
@@ -102,6 +114,18 @@ export class RingSimulator {
     };
     this.emit(event);
     return event;
+  }
+
+  reset() {
+    this.devices = JSON.parse(JSON.stringify(this.initialState));
+    this.activeScenario = null;
+    const resetEvent = {
+      type: 'SIMULATOR_RESET',
+      timestamp: new Date().toISOString(),
+      message: 'Ring Virtual Device Mesh reset to pristine standby state.'
+    };
+    this.emit(resetEvent);
+    return { success: true, devices: this.getDevices() };
   }
 
   /**
@@ -130,24 +154,64 @@ export class RingSimulator {
       intruder: {
         scenario: 'intruder',
         title: 'Late-Night Perimeter Breach / Lurker',
+        timeOfDay: '02:00 AM',
         deviceId: 'floodlight_driveway',
         eventType: EventTypes.MOTION,
         visitorType: VisitorTypes.SUSPICIOUS,
         objectsDetected: [
-          { label: 'Unknown Subject (Face Covered)', confidence: 0.94, bbox: [210, 110, 260, 490], color: '#ef4444' },
-          { label: 'Crowbar / Tool', confidence: 0.88, bbox: [320, 290, 80, 190], color: '#dc2626' }
+          { label: 'Unknown Subject (Face Occluded)', confidence: 0.94, bbox: [210, 110, 260, 490], color: '#ef4444' },
+          { label: 'Crowbar / Burglary Tool', confidence: 0.88, bbox: [320, 290, 80, 190], color: '#dc2626' }
         ],
-        visualAnomaly: 0.92,
-        dwellTimeSeconds: 48,
+        visualAnomaly: 0.85,
+        dwellTimeSeconds: 45,
         perimeterZoneBreach: true,
         facialOcclusion: true,
-        behaviorVector: 0.89,
+        behaviorVector: 0.717,
         ambientLighting: 'NIGHT_LOW_LIGHT',
         visitorSpeech: null
+      },
+      theft: {
+        scenario: 'theft',
+        title: 'Package Theft Attempt (Porch Pirate)',
+        timeOfDay: '03:15 PM',
+        deviceId: 'doorbell_front',
+        eventType: EventTypes.MOTION,
+        visitorType: VisitorTypes.PORCH_PIRATE,
+        objectsDetected: [
+          { label: 'Suspicious Individual', confidence: 0.95, bbox: [200, 100, 270, 480], color: '#ef4444' },
+          { label: 'Targeted Parcel Box', confidence: 0.92, bbox: [520, 250, 90, 80], color: '#f59e0b' }
+        ],
+        visualAnomaly: 0.88,
+        dwellTimeSeconds: 8,
+        perimeterZoneBreach: true,
+        facialOcclusion: true,
+        behaviorVector: 0.85,
+        ambientLighting: 'DAYLIGHT',
+        visitorSpeech: null
+      },
+      unknown_visitor: {
+        scenario: 'unknown_visitor',
+        title: 'Unfamiliar Daytime Visitor / Solicitor',
+        timeOfDay: '11:45 AM',
+        deviceId: 'doorbell_front',
+        eventType: EventTypes.DING,
+        visitorType: VisitorTypes.STRANGER,
+        objectsDetected: [
+          { label: 'Unfamiliar Visitor', confidence: 0.91, bbox: [190, 90, 280, 480], color: '#eab308' },
+          { label: 'Clipboard', confidence: 0.84, bbox: [270, 260, 80, 110], color: '#cbd5e1' }
+        ],
+        visualAnomaly: 0.22,
+        dwellTimeSeconds: 18,
+        perimeterZoneBreach: false,
+        facialOcclusion: false,
+        behaviorVector: 0.25,
+        ambientLighting: 'DAYLIGHT',
+        visitorSpeech: 'Hello? Anyone home? Just inquiring about home roofing.'
       },
       resident: {
         scenario: 'resident',
         title: 'Authorized Resident Return',
+        timeOfDay: '05:30 PM',
         deviceId: 'doorbell_front',
         eventType: EventTypes.MOTION,
         visitorType: VisitorTypes.RESIDENT,
@@ -166,6 +230,7 @@ export class RingSimulator {
       animal: {
         scenario: 'animal',
         title: 'Neighborhood Cat (False Alarm Mitigation)',
+        timeOfDay: '07:15 PM',
         deviceId: 'floodlight_driveway',
         eventType: EventTypes.MOTION,
         visitorType: VisitorTypes.ANIMAL,
@@ -183,6 +248,7 @@ export class RingSimulator {
       fall_emergency: {
         scenario: 'fall_emergency',
         title: 'Caretaker Emergency: Fall Detected on Porch',
+        timeOfDay: '09:20 AM',
         deviceId: 'doorbell_front',
         eventType: EventTypes.MOTION,
         visitorType: VisitorTypes.RESIDENT,

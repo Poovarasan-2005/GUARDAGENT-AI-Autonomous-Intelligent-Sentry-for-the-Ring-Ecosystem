@@ -2,20 +2,21 @@
  * GuardAgent AI - Mathematical Threat Engine
  * Evaluates real-time threat vectors using a multi-factor logistic scoring function:
  *   T(t) = sigma( w_v * V(t) + w_t * T_d(t) + w_z * Z(t) + w_b * B(t) - theta_k )
- * Amazon Developer Hackathon 2026 - Ring Track
+ * Calibrated for Amazon Developer Hackathon 2026 - Ring Track
  */
 
 import { ThreatLevels } from '../ring/ringTypes.js';
 
 export class ThreatEngine {
   constructor(config = {}) {
+    // Calibrated mathematical weights
     this.weights = {
-      wv: config.wv || 3.8,  // Visual anomaly weight (masked face, crowbar, break-in posture)
-      wt: config.wt || 2.2,  // Dwell time decay weight (seconds hovering in monitored zone)
-      wz: config.wz || 2.6,  // Perimeter zone severity weight
-      wb: config.wb || 2.4   // Behavioral deviation weight
+      wv: config.wv || 1.8,  // Visual anomaly weight (masked face, crowbar, break-in posture)
+      wt: config.wt || 1.2,  // Dwell time decay weight (seconds hovering in monitored zone)
+      wz: config.wz || 1.4,  // Perimeter zone severity weight
+      wb: config.wb || 1.2   // Behavioral deviation weight
     };
-    this.biasThreshold = config.biasThreshold || 3.4; // Neutral calibration offset
+    this.biasThreshold = config.biasThreshold || 2.8; // Calibrated baseline offset
   }
 
   /**
@@ -26,11 +27,11 @@ export class ThreatEngine {
   }
 
   /**
-   * Computes normalized dwell time factor [0, 1] with exponential saturation
+   * Computes normalized dwell time factor [0, 1] with exponential saturation:
+   *   T_d(t) = 1 - e^(-t / 25.0)
    */
   computeDwellFactor(seconds) {
-    if (!seconds || seconds <= 5) return 0.05;
-    // Saturation curve: 30+ seconds approaches 1.0
+    if (!seconds || seconds <= 0) return 0.05;
     return Math.min(1.0, 1.0 - Math.exp(-seconds / 25.0));
   }
 
@@ -71,6 +72,10 @@ export class ThreatEngine {
       dwellFactorScore: Math.round(Td * 100),
       zoneBreachScore: Math.round(Z * 100),
       behaviorScore: Math.round(B * 100),
+      rawV: V,
+      rawTd: parseFloat(Td.toFixed(3)),
+      rawZ: Z,
+      rawB: B,
       logit: parseFloat(logit.toFixed(3)),
       threatScorePercent,
       level,

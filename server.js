@@ -60,6 +60,30 @@ ringSimulator.onEvent((event) => {
 
 // 4. REST API Endpoints
 
+// Authentication Login Endpoint (Requested for home page access gate)
+app.post('/api/auth/login', (req, res) => {
+  const { sentryId, accessKey } = req.body;
+  // Accept standard judge access or any non-empty demo password
+  const isValid = (!sentryId && !accessKey) || 
+                  (sentryId === 'judge@amazon-dev.com' || sentryId === 'admin') || 
+                  (accessKey && accessKey.length >= 3);
+
+  if (isValid) {
+    res.json({
+      success: true,
+      token: 'sentry_sec_token_' + Date.now(),
+      user: {
+        id: sentryId || 'judge_demo',
+        name: 'Amazon Hackathon Reviewer',
+        role: 'Master Security Supervisor',
+        clearanceLevel: 'LEVEL_4_FULL_ACTUATION'
+      }
+    });
+  } else {
+    res.status(401).json({ success: false, message: 'Invalid credentials. Use Quick Judge Access.' });
+  }
+});
+
 // Get all Ring devices
 app.get('/api/devices', async (req, res) => {
   const devices = await ringClient.getDevices();
@@ -108,6 +132,21 @@ app.post('/api/scenarios/trigger', (req, res) => {
   res.json({ success: true, triggeredScenario: scenario, event });
 });
 
+// Reset Demo Environment
+app.post('/api/demo/reset', (req, res) => {
+  const result = ringSimulator.reset();
+  guardAgent.resetAgent();
+  broadcastToClients({ type: 'DEMO_RESET', result });
+  res.json({ success: true, message: 'Demo reset successfully.' });
+});
+
+// Manual Human Override Action
+app.post('/api/agent/override', async (req, res) => {
+  const { command, parameters } = req.body;
+  const log = await guardAgent.handleManualOverride(command, parameters);
+  res.json({ success: true, overrideLog: log });
+});
+
 // Update GuardAgent operating mode
 app.post('/api/agent/mode', (req, res) => {
   const { mode } = req.body;
@@ -120,19 +159,27 @@ app.get('/api/agent/status', (req, res) => {
   res.json({ success: true, status: guardAgent.getStatus() });
 });
 
-// Query live Ring API call logs (for Inspector)
+// Query live Ring API call logs (for Inspector) - With token/secret redaction
 app.get('/api/ring/api-logs', (req, res) => {
-  res.json({ success: true, logs: ringClient.requestLog });
+  const sanitizedLogs = (ringClient.requestLog || []).map(entry => {
+    const copy = { ...entry };
+    if (copy.payload && typeof copy.payload === 'object') {
+      const sanitizedPayload = { ...copy.payload };
+      if (sanitizedPayload.token) sanitizedPayload.token = '[REDACTED]';
+      if (sanitizedPayload.secret) sanitizedPayload.secret = '[REDACTED]';
+      copy.payload = sanitizedPayload;
+    }
+    return copy;
+  });
+  res.json({ success: true, logs: sanitizedLogs });
 });
 
 // Official Ring Webhook Receiver Endpoint
 app.post('/api/ring/webhook', async (req, res) => {
-  console.log('[Ring Webhook Received]:', req.body);
   const payload = req.body;
   ringClient.logApiCall('POST', '/api/ring/webhook', payload, { acknowledged: true }, 200);
 
-  // Ingest into GuardAgent if valid
-  if (payload && payload.kind) {
+  if (payload && (payload.kind || payload.eventType)) {
     await guardAgent.handleRingEvent(payload);
   }
 
@@ -141,14 +188,14 @@ app.post('/api/ring/webhook', async (req, res) => {
 
 // 5. WebSocket connection handler
 wss.on('connection', (ws) => {
-  // Send initial snapshot
   ws.send(JSON.stringify({
     type: 'INITIAL_STATE',
     payload: {
       devices: ringSimulator.getDevices(),
       agentStatus: guardAgent.getStatus(),
-      apiLogs: ringClient.requestLog.slice(0, 10),
-      activeIncident: guardAgent.activeIncident
+      apiLogs: ringClient.requestLog.slice(0, 15),
+      activeIncident: guardAgent.activeIncident,
+      lastSecurityIncidentRecord: guardAgent.lastSecurityIncidentRecord
     }
   }));
 
@@ -167,7 +214,7 @@ server.listen(PORT, HOST, () => {
   console.log(`\n========================================================`);
   console.log(`🛡️  GUARDAGENT AI - SENTRY CONTROL CENTER IS ONLINE`);
   console.log(`🔗 Local Interface: http://localhost:${PORT}`);
-  console.log(`⚡ Mode: ${ringClient.isSimulator ? 'RING SIMULATOR (DEV/DEMO)' : 'RING LIVE CLOUD API'}`);
+  console.log(`⚡ Mode: ${ringClient.isSimulator ? 'RING HARDWARE SIMULATOR (VIRTUAL MESH)' : 'RING LIVE CLOUD API'}`);
   console.log(`🏆 Amazon Developer Hackathon 2026 - Ring Track`);
   console.log(`========================================================\n`);
 });

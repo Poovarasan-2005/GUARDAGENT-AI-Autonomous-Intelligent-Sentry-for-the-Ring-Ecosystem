@@ -8,18 +8,24 @@ export const DeviceTypes = {
   FLOODLIGHT_CAM: 'floodlight_cam_wired_pro',
   SMART_LOCK: 'smart_deadbolt_lock',
   ALARM_SIREN: 'alarm_siren_pro',
-  CHIME: 'chime_pro_v2'
+  CHIME: 'chime_pro_v2',
+  CONTACT_SENSOR: 'contact_sensor_v2'
 };
 
 export const EventTypes = {
   MOTION: 'motion',
   DING: 'ding',
+  DEVICE_STATE_CHANGE: 'device_state_change',
   TWO_WAY_AUDIO_START: 'two_way_audio_start',
   TWO_WAY_AUDIO_END: 'two_way_audio_end',
   FLOODLIGHT_SET: 'floodlight_set',
   LOCK_SET: 'lock_set',
   SIREN_SET: 'siren_set',
-  ZONE_BREACH: 'zone_breach'
+  ZONE_BREACH: 'zone_breach',
+  CONTACT_SENSOR_CHANGE: 'contact_sensor_change',
+  PACKAGE_DETECTED: 'package_detected',
+  PACKAGE_THEFT_DETECTED: 'package_theft_detected',
+  MANUAL_OVERRIDE: 'manual_override'
 };
 
 export const ThreatLevels = {
@@ -35,5 +41,6 @@ export const VisitorTypes = {
   NEIGHBOR: 'NEIGHBOR',
   STRANGER: 'STRANGER',
   SUSPICIOUS: 'SUSPICIOUS',
-  ANIMAL: 'ANIMAL'
+  ANIMAL: 'ANIMAL',
+  PORCH_PIRATE: 'PORCH_PIRATE'
 };

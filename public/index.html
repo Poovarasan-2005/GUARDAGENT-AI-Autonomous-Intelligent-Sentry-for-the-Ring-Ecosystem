@@ -10,7 +10,183 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- Header Bar -->
+
+  <!-- =========================================================================
+       LOGIN ACCESS SCREEN (SECURITY CLEARANCE GATE)
+       ========================================================================= -->
+  <div class="login-gate-overlay" id="loginGateOverlay">
+    <div class="login-gate-card">
+      <div class="login-badge-header">
+        <div class="login-shield-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+        </div>
+        <div>
+          <span class="badge ring-track">Ring Track</span>
+          <span class="badge hackathon">Amazon Developer Hackathon 2026</span>
+        </div>
+      </div>
+
+      <h2 class="login-title">GuardAgent AI</h2>
+      <p class="login-subtitle">Autonomous Intelligent Sentry & IoT Access Control for the Ring Ecosystem</p>
+
+      <div class="login-clearance-notice">
+        <span class="lock-icon">🔒</span>
+        <span>Restricted Sentry Portal — Authentication Required</span>
+      </div>
+
+      <form id="loginForm" class="login-form">
+        <div class="input-group">
+          <label for="sentryIdInput">Sentry Supervisor ID</label>
+          <input type="text" id="sentryIdInput" class="cyber-input" value="judge@amazon-dev.com" placeholder="Enter identifier...">
+        </div>
+
+        <div class="input-group">
+          <label for="accessKeyInput">Access Key / PIN</label>
+          <input type="password" id="accessKeyInput" class="cyber-input" value="••••••••" placeholder="Enter PIN...">
+        </div>
+
+        <button type="submit" class="cyber-login-btn">
+          <span>Authorize Access</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </button>
+
+        <div class="login-divider"><span>OR</span></div>
+
+        <button type="button" class="judge-quick-btn" id="btnQuickJudgeLogin">
+          ⚡ Quick Judge Access (1-Click Launch)
+        </button>
+      </form>
+
+      <div class="login-footer-info">
+        <span>Verified Device Mesh: 4 Ring Virtual Actuators Online</span>
+        <span>Zero Third-Party Hardware Required</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       SYSTEM ARCHITECTURE MODAL (<10s Visual Comprehension)
+       ========================================================================= -->
+  <div class="modal-backdrop" id="archModalBackdrop">
+    <div class="arch-modal-card">
+      <div class="modal-header">
+        <div>
+          <h2 class="modal-title">GuardAgent AI Architecture</h2>
+          <p class="modal-subtitle">Autonomous End-to-End Loop: Detect → Understand → Decide → Act → Verify → Log</p>
+        </div>
+        <button class="modal-close-btn" id="btnCloseArchModal">&times;</button>
+      </div>
+
+      <div class="arch-flow-grid">
+        <div class="arch-node">
+          <div class="node-step">1. INPUT</div>
+          <div class="node-icon">🔔</div>
+          <strong>Ring Device Mesh</strong>
+          <small>Doorbell Pro 2, Floodlight Cam, Deadbolt, Siren, Chime</small>
+        </div>
+        <div class="arch-arrow">➔</div>
+
+        <div class="arch-node">
+          <div class="node-step">2. INGESTION</div>
+          <div class="node-icon">⚡</div>
+          <strong>Ring API / Webhooks</strong>
+          <small>Motion triggers, Doorbell dings, WebSocket telemetry</small>
+        </div>
+        <div class="arch-arrow">➔</div>
+
+        <div class="arch-node">
+          <div class="node-step">3. PERCEPTION</div>
+          <div class="node-icon">👁️</div>
+          <strong>Vision Classifier</strong>
+          <small>Courier, Parcel, Occluded Face, Dwell Time, Zone Breach</small>
+        </div>
+        <div class="arch-arrow">➔</div>
+
+        <div class="arch-node highlight">
+          <div class="node-step">4. REASONING</div>
+          <div class="node-icon">🧠</div>
+          <strong>Threat Engine T(t)</strong>
+          <small>Multi-factor logistic formula: T(t) ∈ [0, 100%]</small>
+        </div>
+        <div class="arch-arrow">➔</div>
+
+        <div class="arch-node">
+          <div class="node-step">5. ACTION</div>
+          <div class="node-icon">🛡️</div>
+          <strong>GuardAgent Policy</strong>
+          <small>Voice dialogue, Lockbox unlock, Floodlight, 110dB Siren</small>
+        </div>
+        <div class="arch-arrow">➔</div>
+
+        <div class="arch-node">
+          <div class="node-step">6. AUDIT</div>
+          <div class="node-icon">📋</div>
+          <strong>Verification & Logs</strong>
+          <small>Cryptographic snapshots, Auto-relock, Owner dispatch</small>
+        </div>
+      </div>
+
+      <div class="arch-callout">
+        <strong>Fail-Secure Access Guarantee:</strong> GuardAgent AI strictly actuates the porch delivery parcel box during deliveries. The main residence door deadbolt remains permanently locked and requires authenticated resident biometric/PIN clearance.
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       SECURITY INCIDENT RECORD MODAL
+       ========================================================================= -->
+  <div class="modal-backdrop" id="incidentModalBackdrop">
+    <div class="incident-modal-card">
+      <div class="modal-header">
+        <div class="incident-badge-title">
+          <span class="incident-pill critical">SECURITY INCIDENT RECORD</span>
+          <span class="incident-status-tag" id="incModalStatus">CONTAINED</span>
+        </div>
+        <button class="modal-close-btn" id="btnCloseIncidentModal">&times;</button>
+      </div>
+
+      <div class="incident-meta-grid">
+        <div class="meta-item">
+          <label>Threat Severity</label>
+          <span class="meta-val red" id="incModalSeverity">CRITICAL (88%)</span>
+        </div>
+        <div class="meta-item">
+          <label>Timestamp</label>
+          <span class="meta-val" id="incModalTime">02:00 AM</span>
+        </div>
+        <div class="meta-item">
+          <label>Monitored Zone</label>
+          <span class="meta-val" id="incModalZone">Driveway Perimeter</span>
+        </div>
+        <div class="meta-item">
+          <label>Incident Ref</label>
+          <span class="meta-val mono" id="incModalRef">INC-88942-RING</span>
+        </div>
+      </div>
+
+      <div class="incident-actions-checklist">
+        <h4>Autonomous Actuation Chain Completed:</h4>
+        <ul id="incModalActionsList">
+          <li><span class="check-icon">✓</span> Stage 1: Driveway Floodlight activated (100% illumination)</li>
+          <li><span class="check-icon">✓</span> Stage 2: Sentry verbal warning broadcast through Ring speaker</li>
+          <li><span class="check-icon">✓</span> Stage 3: Ring Alarm 110dB siren triggered (active deterrence)</li>
+          <li><span class="check-icon">✓</span> Cryptographic evidence snapshot recorded</li>
+          <li><span class="check-icon">✓</span> Urgent push alert dispatched to homeowner</li>
+        </ul>
+      </div>
+
+      <div class="incident-footer-row">
+        <span>Perimeter secured. Subject withdrew. Manual override available.</span>
+        <button class="tool-btn" id="btnDismissIncidentModal">Acknowledge & Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       APP HEADER BAR
+       ========================================================================= -->
   <header class="app-header">
     <div class="header-brand">
       <div class="logo-shield">
@@ -23,31 +199,73 @@
           <h1 class="brand-title">GuardAgent AI</h1>
           <span class="badge ring-track">Ring Track</span>
           <span class="badge hackathon">Amazon Developer Hackathon</span>
+          <span class="badge simulator-mode">SIMULATION MODE (Ring Virtual Mesh v12.4)</span>
         </div>
         <p class="brand-subtitle">Autonomous Security & IoT Access Control for the Ring Ecosystem</p>
       </div>
     </div>
 
     <div class="header-actions">
+      <!-- Quick Presentation Controls -->
+      <button class="nav-action-btn" id="btnOpenArchModal" title="Open Visual Architecture">
+        📐 Architecture
+      </button>
+
+      <button class="nav-action-btn demo-toggle-btn" id="btnToggleDemoMode" title="Toggle High-Visibility Presentation Mode">
+        🎬 Demo Mode
+      </button>
+
+      <button class="nav-action-btn reset-btn" id="btnResetDemo" title="Reset Devices and Telemetry to Standby">
+        🔄 Reset Demo
+      </button>
+
       <div class="mode-selector">
-        <span class="mode-label">Agent Mode:</span>
+        <span class="mode-label">Mode:</span>
         <select id="agentModeSelect" class="cyber-select">
           <option value="ARMED_SENTRY" selected>🛡️ Armed Sentry (Autonomous)</option>
           <option value="CARETAKER_ONLY">🩺 Caretaker & Safety Only</option>
           <option value="DISARMED">💤 Disarmed / Standby</option>
         </select>
       </div>
+
       <div class="status-pill online" id="wsStatusPill">
         <span class="dot"></span>
-        <span id="wsStatusText">RING SIMULATOR ONLINE</span>
+        <span id="wsStatusText">RING MESH ONLINE</span>
       </div>
+
+      <button class="lock-portal-btn" id="btnLogout" title="Lock Sentry Portal">
+        🔒 Lock
+      </button>
     </div>
   </header>
 
-  <!-- Main Container Grid -->
+  <!-- =========================================================================
+       MANUAL HUMAN OVERRIDE BAR (High Visibility - Phase 9)
+       ========================================================================= -->
+  <section class="override-bar">
+    <div class="override-label-group">
+      <span class="override-icon">🎮</span>
+      <div>
+        <strong class="override-title">HUMAN MANUAL OVERRIDE</strong>
+        <span class="override-status-text" id="overrideStatusText">Status: Assistive Autonomous Mode Active (Manual Authority Available)</span>
+      </div>
+    </div>
+
+    <div class="override-controls-group">
+      <button class="override-btn" id="btnOverridePause" data-action="PAUSE_AGENT">⏸️ Pause Agent</button>
+      <button class="override-btn danger" id="btnOverrideStopSiren" data-action="STOP_SIREN">🔕 Stop Siren</button>
+      <button class="override-btn" id="btnOverrideLightsOff" data-action="LIGHTS_OFF">💡 Lights Off</button>
+      <button class="override-btn" id="btnOverrideLock" data-action="LOCK_DOOR">🔒 Lock Deadbolt</button>
+      <button class="override-btn success" id="btnOverrideUnlockBox" data-action="UNLOCK_DELIVERY_BOX">📦 Unlock Parcel Box</button>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       MAIN DASHBOARD GRID
+       ========================================================================= -->
   <main class="dashboard-grid">
 
-    <!-- LEFT COLUMN: Live Camera Stage & Scenarios -->
+    <!-- LEFT COLUMN: Live Camera Stage, Timelines & Scenarios -->
     <section class="stage-column">
 
       <!-- Live Ring Camera Viewport Card -->
@@ -56,16 +274,17 @@
           <div class="camera-info">
             <span class="rec-dot"></span>
             <span class="camera-name" id="currentCameraName">Front Door Pro 2</span>
-            <span class="camera-spec">1080p HDR • 60 FPS • Encrypted</span>
+            <span class="camera-spec">1080p HDR • 60 FPS • Encrypted Stream</span>
           </div>
           <div class="camera-toolbar">
             <button class="tool-btn active" id="btnCamDoorbell" title="Switch to Front Doorbell">Doorbell</button>
             <button class="tool-btn" id="btnCamFloodlight" title="Switch to Driveway Floodlight">Floodlight</button>
-            <button class="tool-btn" id="btnNightVision" title="Toggle Night Vision">IR Night</button>
+            <button class="tool-btn" id="btnNightVision" title="Toggle IR Night Vision">IR Night</button>
+            <button class="tool-btn" id="btnFullscreen" title="Toggle Fullscreen Canvas">⛶ Fullscreen</button>
           </div>
         </div>
 
-        <div class="canvas-wrapper">
+        <div class="canvas-wrapper" id="canvasWrapper">
           <canvas id="cameraCanvas" width="720" height="420"></canvas>
           
           <!-- Threat Level Overlay Badge -->
@@ -75,9 +294,14 @@
             <span class="threat-level-tag" id="overlayThreatLevel">BENIGN</span>
           </div>
 
+          <!-- Active Stage Visualizer (e.g. STAGE 1 / 2 / 3) -->
+          <div class="canvas-stage-badge" id="canvasStageBadge">
+            STANDBY SENTRY
+          </div>
+
           <!-- Video Stream Watermark -->
           <div class="canvas-watermark">
-            <span>RING OS v12.4 • LIVE SENTRY STREAM</span>
+            <span>RING OS v12.4 • SIMULATED LIVE SENTRY</span>
             <span id="streamTimestamp">--:--:--</span>
           </div>
 
@@ -105,28 +329,88 @@
         </div>
       </div>
 
-      <!-- Quick Interactive Scenarios Bar -->
+      <!-- Autonomous Delivery & Escalation Timeline Stepper -->
+      <div class="glass-card timeline-card" id="timelineStepperCard">
+        <div class="card-header">
+          <h3 class="card-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            Autonomous Execution Sequence
+          </h3>
+          <span class="timeline-status-tag" id="timelineStatusTag">READY FOR SCENARIO</span>
+        </div>
+        
+        <div class="timeline-steps-track">
+          <div class="t-step active" id="stepDetect">
+            <span class="step-num">1</span>
+            <span class="step-text">DETECT</span>
+          </div>
+          <div class="t-line"></div>
+          <div class="t-step" id="stepUnderstand">
+            <span class="step-num">2</span>
+            <span class="step-text">UNDERSTAND</span>
+          </div>
+          <div class="t-line"></div>
+          <div class="t-step" id="stepDecide">
+            <span class="step-num">3</span>
+            <span class="step-text">DECIDE</span>
+          </div>
+          <div class="t-line"></div>
+          <div class="t-step" id="stepAct">
+            <span class="step-num">4</span>
+            <span class="step-text">ACT</span>
+          </div>
+          <div class="t-line"></div>
+          <div class="t-step" id="stepVerify">
+            <span class="step-num">5</span>
+            <span class="step-text">VERIFY</span>
+          </div>
+          <div class="t-line"></div>
+          <div class="t-step" id="stepComplete">
+            <span class="step-num">6</span>
+            <span class="step-text">COMPLETE</span>
+          </div>
+        </div>
+        <p class="timeline-step-detail" id="timelineStepDetail">Select a live demo scenario below to view GuardAgent AI's autonomous reasoning and device actuation pipeline.</p>
+      </div>
+
+      <!-- Quick Interactive Scenarios Bar (Judge Verification Suite) -->
       <div class="glass-card scenarios-card">
         <h3 class="card-title">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-          Trigger Security Scenarios (Judge Verification Suite)
+          Live Demo Scenarios (Judge Verification Suite)
         </h3>
-        <p class="card-desc">Simulate realistic Ring doorbell rings, delivery drops, or late-night intruder encounters to test GuardAgent's autonomous logic.</p>
+        <p class="card-desc">Click any scenario to watch GuardAgent AI detect, evaluate the threat matrix, and actuate Ring devices autonomously.</p>
         
         <div class="scenario-buttons-grid">
           <button class="scenario-btn courier" data-scenario="courier">
             <div class="btn-icon">📦</div>
             <div class="btn-text">
               <strong>Amazon Prime Courier</strong>
-              <span>Detects parcel, verifies drop-off, unlocks lockbox</span>
+              <span>Classifies courier, verifies parcel, unlocks delivery box, relocks</span>
             </div>
           </button>
 
           <button class="scenario-btn intruder" data-scenario="intruder">
             <div class="btn-icon">🚨</div>
             <div class="btn-text">
-              <strong>Late-Night Intruder</strong>
-              <span>Masked prowler, floodlight strobe, graduated 110dB siren</span>
+              <strong>Late-Night Intruder (2:00 AM)</strong>
+              <span>Masked prowler, 88% threat, Stage 1-3 graduated defense + siren</span>
+            </div>
+          </button>
+
+          <button class="scenario-btn theft" data-scenario="theft">
+            <div class="btn-icon">🏴‍☠️</div>
+            <div class="btn-text">
+              <strong>Package Theft Attempt</strong>
+              <span>Detects parcel grab, triggers strobe, warning & instant deterrence</span>
+            </div>
+          </button>
+
+          <button class="scenario-btn stranger" data-scenario="unknown_visitor">
+            <div class="btn-icon">🚪</div>
+            <div class="btn-text">
+              <strong>Unknown Daytime Visitor</strong>
+              <span>Identifies solicitor, courtesy voice response, access stays locked</span>
             </div>
           </button>
 
@@ -138,14 +422,6 @@
             </div>
           </button>
 
-          <button class="scenario-btn animal" data-scenario="animal">
-            <div class="btn-icon">🐱</div>
-            <div class="btn-text">
-              <strong>Harmless Pet Filter</strong>
-              <span>Classifies stray animal, suppresses alarms & false alerts</span>
-            </div>
-          </button>
-
           <button class="scenario-btn fall" data-scenario="fall_emergency">
             <div class="btn-icon">🩺</div>
             <div class="btn-text">
@@ -153,18 +429,36 @@
               <span>Elderly fall detection, voice check, caretaker dispatch</span>
             </div>
           </button>
+
+          <button class="scenario-btn animal" data-scenario="animal">
+            <div class="btn-icon">🐱</div>
+            <div class="btn-text">
+              <strong>Harmless Pet Filter</strong>
+              <span>Classifies stray animal, suppresses alarms & false alerts</span>
+            </div>
+          </button>
         </div>
       </div>
 
-      <!-- Live Ring API Inspector Panel -->
+      <!-- Live Ring API Inspector Panel (Phase 8) -->
       <div class="glass-card api-inspector-card">
         <div class="card-header">
-          <h3 class="card-title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
-            Live Ring API & Webhook Packet Inspector
-          </h3>
-          <span class="badge api-badge" id="apiCallCount">0 Calls</span>
+          <div class="inspector-header-left">
+            <h3 class="card-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+              Live Ring API & Webhook Packet Inspector
+            </h3>
+            <span class="badge api-badge" id="apiCallCount">0 Calls</span>
+          </div>
+
+          <!-- Inspector Filter Buttons -->
+          <div class="inspector-filters">
+            <button class="filter-btn active" data-filter="ALL">ALL</button>
+            <button class="filter-btn" data-filter="EVENTS">LIVE EVENTS</button>
+            <button class="filter-btn" data-filter="COMMANDS">DEVICE COMMANDS</button>
+          </div>
         </div>
+
         <div class="api-log-stream" id="apiLogStream">
           <div class="log-placeholder">Awaiting Ring API events and webhook dispatches...</div>
         </div>
@@ -172,10 +466,10 @@
 
     </section>
 
-    <!-- RIGHT COLUMN: Threat Engine, Ring Device Controls & Decision Log -->
+    <!-- RIGHT COLUMN: Threat Engine, Ring Device Controls, Safety Policy & Decision Log -->
     <section class="control-column">
 
-      <!-- Threat Engine Math Matrix Card -->
+      <!-- Threat Engine Math Matrix Card (Phase 12) -->
       <div class="glass-card threat-matrix-card">
         <h3 class="card-title">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
@@ -189,6 +483,7 @@
           <div class="threat-equation">
             <code>T(t) = σ(w_v·V + w_t·T_d + w_z·Z + w_b·B - θ)</code>
             <small>Logistic Sigmoidal Multi-Vector Assessment</small>
+            <div class="active-decision-tag" id="activeDecisionTag">DECISION: STANDBY MONITORING</div>
           </div>
         </div>
 
@@ -227,11 +522,11 @@
         </div>
       </div>
 
-      <!-- Ring Connected Devices Control Center -->
+      <!-- Ring Connected Devices Control Center (Phase 6) -->
       <div class="glass-card devices-card">
         <h3 class="card-title">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-          Ring Device Mesh Actuators
+          Ring Device Mesh Actuators (Virtual Hardware)
         </h3>
 
         <div class="device-list">
@@ -253,7 +548,7 @@
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
             </div>
             <div class="device-details">
-              <span class="device-name">Driveway Floodlight Cam</span>
+              <span class="device-name">Driveway Floodlight Cam Wired Pro</span>
               <span class="device-state" id="floodlightStateText">OFF (0% Intensity)</span>
             </div>
             <button class="device-action-btn" id="btnToggleFloodlight">Lights On</button>
@@ -270,21 +565,57 @@
             </div>
             <button class="device-action-btn danger" id="btnToggleSiren">Test Siren</button>
           </div>
+
+          <!-- Contact Sensor -->
+          <div class="device-item" id="deviceContactSensorItem">
+            <div class="device-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="18" rx="1"/><rect x="14" y="3" width="7" height="18" rx="1"/></svg>
+            </div>
+            <div class="device-details">
+              <span class="device-name">Perimeter Gate Contact Sensor</span>
+              <span class="device-state" id="contactSensorText">CLOSED (Secure)</span>
+            </div>
+            <button class="device-action-btn" id="btnToggleContact">Simulate Open</button>
+          </div>
         </div>
       </div>
 
-      <!-- Autonomous Agent Decision Timeline -->
+      <!-- Active Safety Policy Panel (Phase 10) -->
+      <div class="glass-card safety-policy-card">
+        <div class="card-header">
+          <h3 class="card-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            Safety Architecture & Constraints
+          </h3>
+          <span class="safety-badge">SAFETY POLICY: ACTIVE</span>
+        </div>
+
+        <ul class="safety-principles-list">
+          <li><strong>Principle 1:</strong> Never unlock main residence door for unverified strangers.</li>
+          <li><strong>Principle 2:</strong> Fail-secure default lock states across all actuators.</li>
+          <li><strong>Principle 3:</strong> Courier safe-deposit access is temporary (15s auto-relock).</li>
+          <li><strong>Principle 4:</strong> Visual parcel verification required prior to delivery box access.</li>
+          <li><strong>Principle 5:</strong> Graduated deterrence thresholds: 40% (Light) → 65% (Voice) → 85% (Siren).</li>
+          <li><strong>Principle 6:</strong> Homeowner manual override possesses instant preemption authority.</li>
+          <li><strong>Principle 7:</strong> Zero credentials or tokens exposed to client or network logs.</li>
+        </ul>
+      </div>
+
+      <!-- Autonomous Agent Decision Timeline & Event Stream (Phase 7) -->
       <div class="glass-card decisions-card">
-        <h3 class="card-title">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-          GuardAgent Autonomous Decision Stream
-        </h3>
+        <div class="card-header">
+          <h3 class="card-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            Live Event Stream & Decision Timeline
+          </h3>
+          <button class="clear-feed-btn" id="btnClearFeed">Clear Log</button>
+        </div>
         <div class="decision-feed" id="decisionFeed">
           <div class="feed-item initialized">
             <div class="feed-time">NOW</div>
             <div class="feed-content">
               <strong>GuardAgent Sentry Initialized</strong>
-              <p>Connected to Ring Device Simulator. Armed in Autonomous Sentry Mode.</p>
+              <p>Connected to Ring Virtual Device Mesh. Armed in Autonomous Sentry Mode.</p>
             </div>
           </div>
         </div>

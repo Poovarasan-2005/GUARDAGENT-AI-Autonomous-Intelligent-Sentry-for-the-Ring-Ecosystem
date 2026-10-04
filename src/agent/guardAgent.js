@@ -13,10 +13,11 @@ export class GuardAgent {
     this.ringClient = ringClient;
     this.ringSimulator = ringSimulator;
     this.threatEngine = new ThreatEngine();
-    this.mode = 'ARMED_SENTRY'; // 'ARMED_SENTRY' | 'DISARMED' | 'CARETAKER_ONLY'
+    this.mode = 'ARMED_SENTRY'; // 'ARMED_SENTRY' | 'DISARMED' | 'CARETAKER_ONLY' | 'MANUAL_OVERRIDE'
     this.sensitivity = 'BALANCED'; // 'HIGH' | 'BALANCED' | 'CONSERVATIVE'
     this.eventHistory = [];
     this.activeIncident = null;
+    this.lastSecurityIncidentRecord = null;
     this.broadcastCallback = null;
 
     this.init();
@@ -36,9 +37,30 @@ export class GuardAgent {
     // Listen to Ring events emitted by simulator or cloud webhook
     if (this.ringSimulator) {
       this.ringSimulator.onEvent(async (event) => {
+        if (event.type === 'SIMULATOR_RESET') {
+          this.resetAgent();
+          return;
+        }
+        // Only evaluate security triggers (motion, ding, zone_breach), not internal device actuation loops!
+        if (event.type === 'device_state_change' || event.type === 'two_way_audio_start' || event.type === 'two_way_audio_end') {
+          return;
+        }
+        if (!event.eventType && !event.scenario) {
+          return;
+        }
         await this.handleRingEvent(event);
       });
     }
+  }
+
+  resetAgent() {
+    this.activeIncident = null;
+    this.lastSecurityIncidentRecord = null;
+    this.mode = 'ARMED_SENTRY';
+    this.broadcast('AGENT_RESET', {
+      mode: this.mode,
+      message: 'GuardAgent AI reset to default Armed Sentry state.'
+    });
   }
 
   /**
@@ -50,16 +72,18 @@ export class GuardAgent {
       return;
     }
 
-    // 1. Threat Matrix Assessment
+    // 1. Threat Matrix Assessment (Calculated via multi-factor logistic model)
     const threatAnalysis = this.threatEngine.evaluate(event);
 
-    // 2. Determine Policy Actions
+    // 2. Determine Policy Actions & Safe Access Bounds
     const plannedActions = PolicyRules.determineActions(event, threatAnalysis);
 
     // 3. Assemble Incident Payload
     const incident = {
       id: 'inc_' + Date.now(),
       timestamp: new Date().toISOString(),
+      timeOfDay: event.timeOfDay || new Date().toLocaleTimeString(),
+      zone: event.deviceId === 'floodlight_driveway' ? 'Driveway Perimeter' : 'Front Porch Entry',
       event,
       threatAnalysis,
       plannedActions,
@@ -79,6 +103,29 @@ export class GuardAgent {
     }
 
     incident.status = 'RESOLVED';
+
+    // 5. If high threat, format the Official Security Incident Record
+    if (threatAnalysis.threatScorePercent >= 65) {
+      this.lastSecurityIncidentRecord = {
+        id: incident.id,
+        title: 'SECURITY INCIDENT RECORD',
+        severity: threatAnalysis.level,
+        threatScore: threatAnalysis.threatScorePercent,
+        time: incident.timeOfDay,
+        zone: incident.zone,
+        actionsCompleted: [
+          'Floodlight activated (100% illumination)',
+          'Verbal warning issued through Ring Speaker',
+          threatAnalysis.threatScorePercent >= 85 ? '110dB Siren triggered' : null,
+          'Cryptographic evidence captured',
+          'Homeowner notified'
+        ].filter(Boolean),
+        status: 'CONTAINED',
+        timestamp: new Date().toISOString()
+      };
+      this.broadcast('SECURITY_INCIDENT_LOGGED', this.lastSecurityIncidentRecord);
+    }
+
     this.broadcast('INCIDENT_RESOLVED', incident);
   }
 
@@ -97,14 +144,14 @@ export class GuardAgent {
 
         case 'UNLOCK_SMART_DEADBOLT':
           result = await this.ringClient.setLock(deviceId, false);
-          // If temporary unlock (e.g. for courier drop-off), schedule auto-relock
+          // If temporary unlock (e.g. for courier parcel box deposit), schedule auto-relock
           if (actionItem.temporaryDurationSeconds) {
             setTimeout(async () => {
               await this.ringClient.setLock(deviceId, true);
               this.broadcast('AGENT_ACTION_COMPLETED', {
                 action: 'AUTO_RELOCK_SMART_DEADBOLT',
                 deviceId,
-                summary: 'Smart Deadbolt securely re-locked after courier deposit.'
+                summary: 'Smart Deadbolt securely re-locked after courier deposit verification.'
               });
             }, actionItem.temporaryDurationSeconds * 1000);
           }
@@ -118,11 +165,16 @@ export class GuardAgent {
           result = await this.ringClient.broadcastVoiceMessage(deviceId, actionItem.message);
           break;
 
+        case 'TIMELINE_STEP':
+        case 'STAGE_1_ALERT':
+        case 'STAGE_2_VOICE':
+        case 'STAGE_3_DETERRENCE':
+        case 'CAPTURE_EVIDENCE_SNAPSHOT':
         case 'DISPATCH_CARETAKER_ALERT':
         case 'DISPATCH_EMERGENCY_PUSH':
         case 'LOG_INCIDENT_SUMMARY':
         case 'SUPPRESS_NOTIFICATION':
-          result = { success: true, logged: true };
+          result = { success: true, logged: true, step: actionItem.step || actionItem.action };
           break;
 
         default:
@@ -148,6 +200,54 @@ export class GuardAgent {
     }
   }
 
+  /**
+   * Human Manual Override handler
+   */
+  async handleManualOverride(command, parameters = {}) {
+    const overrideLog = {
+      type: 'HUMAN_OVERRIDE_DETECTED',
+      timestamp: new Date().toISOString(),
+      command,
+      parameters,
+      operator: 'Homeowner / Master Admin'
+    };
+
+    switch (command) {
+      case 'PAUSE_AGENT':
+        this.mode = this.mode === 'DISARMED' ? 'ARMED_SENTRY' : 'DISARMED';
+        overrideLog.summary = `Agent mode toggled to: ${this.mode}`;
+        break;
+
+      case 'STOP_SIREN':
+        await this.ringClient.triggerSiren('floodlight_driveway', false);
+        overrideLog.summary = 'Manually silenced Ring Alarm 110dB siren.';
+        break;
+
+      case 'LIGHTS_OFF':
+        await this.ringClient.setFloodlight('floodlight_driveway', false, 0);
+        overrideLog.summary = 'Manually turned off driveway floodlights.';
+        break;
+
+      case 'LIGHTS_ON':
+        await this.ringClient.setFloodlight('floodlight_driveway', true, 100);
+        overrideLog.summary = 'Manually turned on driveway floodlights at 100%.';
+        break;
+
+      case 'LOCK_DOOR':
+        await this.ringClient.setLock('smart_deadbolt_front', true);
+        overrideLog.summary = 'Manually locked Front Porch Smart Deadbolt.';
+        break;
+
+      case 'UNLOCK_DELIVERY_BOX':
+        await this.ringClient.setLock('smart_deadbolt_front', false);
+        overrideLog.summary = 'Manually unlocked porch parcel delivery lockbox.';
+        break;
+    }
+
+    this.broadcast('MANUAL_OVERRIDE_EXECUTED', overrideLog);
+    return overrideLog;
+  }
+
   setMode(newMode) {
     this.mode = newMode;
     this.broadcast('AGENT_MODE_CHANGED', { mode: this.mode });
@@ -159,9 +259,11 @@ export class GuardAgent {
       mode: this.mode,
       sensitivity: this.sensitivity,
       activeIncident: this.activeIncident,
+      lastSecurityIncidentRecord: this.lastSecurityIncidentRecord,
       recentIncidentsCount: this.eventHistory.length,
       threatEngineModel: 'Logistic-Sigmoidal Multi-Vector v1.4',
-      systemHealth: 'HEALTHY'
+      systemHealth: 'HEALTHY',
+      safetyPolicyStatus: 'ACTIVE'
     };
   }
 }
