@@ -300,34 +300,68 @@ class GuardAgentUI {
     this.elThreatStatusBadge.style.color = color;
     this.elThreatLevel.style.color = color;
 
-    // Decision Tag
+    // Decision Tag & Timeline Progression
+    clearTimeout(this.completeTimer);
     if (event.scenario === 'courier') {
       this.activeDecisionTag.innerText = 'DECISION: SAFE PARCEL DEPOSIT (ACCESS GRANTED)';
       this.activeDecisionTag.style.color = '#38bdf8';
       this.canvasStageBadge.innerText = 'COURIER DETECTED';
       this.canvasStageBadge.classList.remove('critical');
       this.setTimelineStep('verify', 'Courier placement verified in porch delivery box.');
+      this.completeTimer = setTimeout(() => {
+        this.setTimelineStep('complete', 'Autonomous workflow completed. Parcel safely secured in delivery box and deadbolt verified locked.');
+      }, 4500);
     } else if (event.scenario === 'intruder') {
       this.activeDecisionTag.innerText = 'DECISION: ESCALATE → STAGE 3 (ACTIVE DETERRENCE)';
       this.activeDecisionTag.style.color = '#ef4444';
       this.canvasStageBadge.innerText = 'STAGE 3: ACTIVE DETERRENCE';
       this.canvasStageBadge.classList.add('critical');
       this.setTimelineStep('act', 'Graduated response Stage 3 active: 110dB Siren & spotlight strobe.');
+      this.completeTimer = setTimeout(() => {
+        this.setTimelineStep('verify', 'Perimeter verification: Intruder deterrence active. Evidence snapshot captured.');
+        setTimeout(() => {
+          this.setTimelineStep('complete', 'Deterrence cycle complete. Sentry incident logged and dispatched to homeowner.');
+        }, 4000);
+      }, 5000);
     } else if (event.scenario === 'theft') {
       this.activeDecisionTag.innerText = 'DECISION: THREAT INTERCEPTION (THEFT ATTEMPT)';
       this.activeDecisionTag.style.color = '#ef4444';
       this.canvasStageBadge.innerText = 'THEFT THWARTED';
       this.canvasStageBadge.classList.add('critical');
+      this.setTimelineStep('act', 'Theft deterrence active: Red strobe warning initiated.');
+      this.completeTimer = setTimeout(() => {
+        this.setTimelineStep('complete', 'Theft attempt intercepted. Parcel verified on porch threshold.');
+      }, 4000);
     } else if (event.scenario === 'resident') {
       this.activeDecisionTag.innerText = 'DECISION: RESIDENT RECOGNIZED (UNLOCKED)';
       this.activeDecisionTag.style.color = '#34d399';
       this.canvasStageBadge.innerText = 'WELCOME HOME';
       this.canvasStageBadge.classList.remove('critical');
+      this.setTimelineStep('act', 'Smart Deadbolt unlocked for Sarah. Verbal welcome greeting broadcast.');
+      this.completeTimer = setTimeout(() => {
+        this.setTimelineStep('complete', 'Resident entry complete. Main entrance securely relocked.');
+      }, 4000);
+    } else if (event.scenario === 'animal') {
+      this.activeDecisionTag.innerText = 'DECISION: PET / WILDLIFE (ALARMS SUPPRESSED)';
+      this.activeDecisionTag.style.color = '#a855f7';
+      this.canvasStageBadge.innerText = 'PET FILTER (BENIGN)';
+      this.canvasStageBadge.classList.remove('critical');
+      this.setTimelineStep('complete', 'Harmless pet movement filtered. Alarms & notifications suppressed (4% benign).');
+    } else if (event.scenario === 'fall_emergency') {
+      this.activeDecisionTag.innerText = 'DECISION: MEDICAL / FALL PROTOCOL ENGAGED';
+      this.activeDecisionTag.style.color = '#ec4899';
+      this.canvasStageBadge.innerText = 'WELLNESS CHECK';
+      this.canvasStageBadge.classList.remove('critical');
+      this.setTimelineStep('act', 'Emergency protocol active: Conducting audio wellness check and alerting caregiver.');
+      this.completeTimer = setTimeout(() => {
+        this.setTimelineStep('complete', 'Caregiver emergency dispatch confirmed with location and timestamp.');
+      }, 4500);
     } else {
       this.activeDecisionTag.innerText = `DECISION: ${level} CLASSIFICATION`;
       this.activeDecisionTag.style.color = color;
       this.canvasStageBadge.innerText = `MONITORING (${level})`;
       this.canvasStageBadge.classList.remove('critical');
+      this.setTimelineStep('decide', `Event classified as ${level}. Standby perimeter observation.`);
     }
 
     // Update Vector Bars
