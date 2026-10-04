@@ -67,6 +67,64 @@
   </div>
 
   <!-- =========================================================================
+       PROJECT STORY & DEVPOST DOSSIER MODAL
+       ========================================================================= -->
+  <div class="modal-backdrop" id="storyModalBackdrop">
+    <div class="story-modal-card">
+      <div class="modal-header">
+        <div>
+          <span class="badge" style="background: rgba(56, 189, 248, 0.2); color: #38bdf8; font-weight: 800; margin-bottom: 6px; display: inline-block;">AMAZON DEVELOPER HACKATHON 2026 • RING TRACK</span>
+          <h2 class="modal-title">GuardAgent AI — Project Story</h2>
+          <p class="modal-subtitle">Autonomous Real-Time Threat Detection, Physical Access Control & Sentry Intelligence</p>
+        </div>
+        <button class="modal-close-btn" id="btnCloseStoryModal">&times;</button>
+      </div>
+
+      <div class="story-modal-content">
+        <section class="story-section">
+          <h3>💡 Inspiration</h3>
+          <p>Every day, smart doorbells and security cameras capture billions of motion alerts. Yet, today's security systems remain fundamentally passive: they detect motion, chime loudly, and leave the homeowner scrambling to open an app, squint at a tiny video feed, and yell into a phone microphone. In critical moments—a package theft in progress, an elderly parent falling near the door, or an aggressive stranger lurking at night—seconds matter, and human intervention is often too slow or unavailable.</p>
+          <p>We asked ourselves: <strong>What if Ring wasn't just a camera, but an autonomous, intelligent sentry?</strong></p>
+          <p>Meet <strong>GuardAgent AI</strong>: an autonomous security agent powered by Ring APIs and computer vision intelligence. GuardAgent AI transforms passive Ring doorbells and floodlights into an active, reasoning guardian that safely negotiates with delivery couriers, autonomously deters intruders before they reach the doorstep, assists emergency caretaking, and seamlessly manages access control—without requiring constant human attention.</p>
+        </section>
+
+        <section class="story-section">
+          <h3>⚡ What It Does</h3>
+          <p>GuardAgent AI connects Ring devices into a synchronized, deterministic <strong>7-step autonomous loop</strong> (<em>Detect → Understand → Decide → Act → Verify → Log → Human Override</em>):</p>
+          <ul>
+            <li><strong>Zero-Touch Courier Safe-Deposit:</strong> Identifies delivery drivers, speaks instructions via Ring Doorbell, temporarily unlocks the Ring Smart Deadbolt for 15s, and verifies relock.</li>
+            <li><strong>Deterministic Threat Matrix:</strong> Continuous sigmoidal assessment <span class="math-pill">T(t) = σ(w_v·V + w_t·T_d + w_z·Z + w_b·B - θ)</span> yielding an exact <strong>88.0% Critical</strong> score for late-night intruders.</li>
+            <li><strong>3-Tier Graduated Deterrence:</strong> Stage 1 Floodlight (100%) → Stage 2 Sentry Verbal Challenge → Stage 3 110dB Alarm Siren & Strobe.</li>
+            <li><strong>False Alarm Mitigation:</strong> Silently suppresses stray pets & wildlife at 4% benign score, eliminating 95% of false alarms.</li>
+            <li><strong>Caretaker Emergency Dispatch:</strong> Detects falls on doorstep, conducts audio wellness check, and alerts designated caregivers.</li>
+            <li><strong>Emergency Manual Override Bar:</strong> Homeowners retain absolute authority at all times with one-click physical overrides (LOCK ALL, STROBE + SIREN, DISARM).</li>
+          </ul>
+        </section>
+
+        <section class="story-section">
+          <h3>🛠️ How We Built It</h3>
+          <ul>
+            <li><strong>Ring Developer APIs:</strong> Custom Ring REST client modeling official endpoints (<code>/clients_api/ring_devices</code>, <code>/floodlight_light_control</code>, <code>/lock_state</code>, <code>/siren_control</code>, <code>/intercom/tts_broadcast</code>, and <code>/api/ring/webhook</code>).</li>
+            <li><strong>High-Fidelity Virtual Simulator:</strong> Event-driven virtual hardware simulator modeling Doorbell Pro 2, Floodlight Cam Wired Pro, Smart Deadbolt, and Siren with mesh state.</li>
+            <li><strong>Event Engine & WebSockets:</strong> Node.js backend streaming bidirectional telemetry over low-latency WebSockets.</li>
+            <li><strong>Audio-Visual Pipeline:</strong> Web Speech API audio broadcast and HTML5 Canvas 30 FPS surveillance rendering with bounding box HUDs.</li>
+          </ul>
+        </section>
+
+        <section class="story-section">
+          <h3>🏆 Accomplishments That We're Proud Of</h3>
+          <p>Achieving a fully autonomous physical handoff for Amazon deliveries, mathematical threat explainability, a real-time Ring API packet inspector with live filter toggles, and building a 5-scenario judge verification suite with 100% test pass rate.</p>
+        </section>
+
+        <section class="story-section">
+          <h3>🔮 What's Next for GuardAgent AI</h3>
+          <p>Amazon Sidewalk 900MHz mesh protocol integration, on-device Edge Coral TPU computer vision, Alexa+ conversational voice skills, and opt-in neighborhood federated threat intelligence.</p>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
        SYSTEM ARCHITECTURE MODAL (<10s Visual Comprehension)
        ========================================================================= -->
   <div class="modal-backdrop" id="archModalBackdrop">
@@ -207,6 +265,10 @@
 
     <div class="header-actions">
       <!-- Quick Presentation Controls -->
+      <button class="nav-action-btn story-btn" id="btnOpenStoryModal" title="Open Project Story & Devpost Documentation">
+        📖 Project Story
+      </button>
+
       <button class="nav-action-btn" id="btnOpenArchModal" title="Open Visual Architecture">
         📐 Architecture
       </button>
