@@ -34,10 +34,6 @@ class GuardAgentUI {
     this.btnLogout = document.getElementById('btnLogout');
 
     // Modals
-    this.storyModalBackdrop = document.getElementById('storyModalBackdrop');
-    this.btnOpenStoryModal = document.getElementById('btnOpenStoryModal');
-    this.btnCloseStoryModal = document.getElementById('btnCloseStoryModal');
-
     this.archModalBackdrop = document.getElementById('archModalBackdrop');
     this.btnOpenArchModal = document.getElementById('btnOpenArchModal');
     this.btnCloseArchModal = document.getElementById('btnCloseArchModal');
@@ -624,17 +620,6 @@ class GuardAgentUI {
     this.btnLogout.addEventListener('click', () => {
       sessionStorage.removeItem('guardagent_auth');
       this.loginGateOverlay.classList.remove('hidden');
-    });
-
-    // Project Story Modal
-    this.btnOpenStoryModal.addEventListener('click', () => {
-      this.storyModalBackdrop.classList.add('active');
-    });
-    this.btnCloseStoryModal.addEventListener('click', () => {
-      this.storyModalBackdrop.classList.remove('active');
-    });
-    this.storyModalBackdrop.addEventListener('click', (e) => {
-      if (e.target === this.storyModalBackdrop) this.storyModalBackdrop.classList.remove('active');
     });
 
     // Architecture Modal
